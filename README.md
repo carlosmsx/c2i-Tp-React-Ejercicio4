@@ -1,5 +1,6 @@
-#Trabajo Práctico React
-## Ejercicio 1
-### Carlos Escobar
+# Trabajo Práctico React
+## Ejercicio 4
 
-Ejercicio 1 del trabajo práctico de React para la comision c2i.
+Ejercicio 4 del trabajo práctico de React para la comision c2i.
+
+### Carlos Escobar
