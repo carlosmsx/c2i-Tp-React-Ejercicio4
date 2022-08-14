@@ -19,6 +19,7 @@ const Formulario = () => {
 
     return (
         <div>
+            <h2>Nueva tarea</h2>
             <Form onSubmit={submitTarea}>
                 <Form.Group className="mb-3" controlId="formTareaNombre">
                     <Form.Label>Tarea</Form.Label>
@@ -35,10 +36,12 @@ const Formulario = () => {
                     />
                 </Form.Group>
                 <Button variant="primary" type="submit">
-                    Submit
+                    Agregar
                 </Button>
             </Form>
-            <ListaTareas/>
+            <hr/>
+            <h2>Lista de tareas</h2>
+            <ListaTareas listaTareas={listaTareas}/>
         </div>
     );
 };
