@@ -3,11 +3,18 @@ import ListaTareas from './ListaTareas';
 import { Form, Button } from 'react-bootstrap';
 
 const Formulario = () => {
-    const [tarea, setTarea] = useState({nombre:"", descripcion:""});
+    const tareaVacia = {nombre:"", descripcion:""}; //prototipo
+
+    const [tarea, setTarea] = useState(tareaVacia);
+    const [listaTareas, setListaTareas] = useState([]);
 
     const submitTarea = (e)=>{
         e.preventDefault();
-        console.log(tarea)
+        let copiaListaTareas = listaTareas;
+        copiaListaTareas.push(tarea);
+        setListaTareas(copiaListaTareas);
+        setTarea(tareaVacia); //fuerzo el borrado del formulario
+        console.log(listaTareas)
     }
 
     return (
@@ -16,14 +23,14 @@ const Formulario = () => {
                 <Form.Group className="mb-3" controlId="formTareaNombre">
                     <Form.Label>Tarea</Form.Label>
                     <Form.Control type="text" placeholder="Ingrese nombre para la tarea" 
-                        onChange={(e)=>setTarea({nombre:e.target.value.trim(), descripcion:tarea.descripcion})} 
+                        onChange={(e)=>setTarea({nombre:e.target.value.trimStart(), descripcion:tarea.descripcion})} 
                         value={tarea.nombre}
                     />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formTareaDescripcion">
                     <Form.Label>Descripción</Form.Label>
                     <Form.Control type="text" placeholder="Ingrese la descripción de la tarea" 
-                        onChange={(e)=>setTarea({nombre:tarea.nombre, descripcion:e.target.value.trim()})}
+                        onChange={(e)=>setTarea({nombre:tarea.nombre, descripcion:e.target.value.trimStart()})}
                         value={tarea.descripcion}
                     />
                 </Form.Group>
