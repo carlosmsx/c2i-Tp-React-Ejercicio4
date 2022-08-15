@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import ListaTareas from './ListaTareas';
 import { Form, Button } from 'react-bootstrap';
+import Swal from 'sweetalert2';
 
 const Formulario = () => {
     const tareaVacia = {nombre:"", descripcion:""}; //prototipo
@@ -15,8 +16,27 @@ const Formulario = () => {
     }
 
     const borrarTarea = (tareaPorBorrar)=>{
-        let nuevaLista = listaTareas.filter((item)=>{return item.nombre!==tareaPorBorrar.nombre;});   
-        setListaTareas(nuevaLista);     
+        
+        Swal.fire({
+            title: 'Está seguro que desea eliminar la tarea?',
+            text: 'Tenga en cuenta que no podrá revertir este paso.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Borrar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let nuevaLista = listaTareas.filter((item)=>{return item.nombre!==tareaPorBorrar.nombre;});   
+                setListaTareas(nuevaLista);     
+                Swal.fire(
+                    'Tarea eliminada!',
+                    'La tarea fue eliminada.',
+                    'success'
+                )
+            }
+        })
     }
 
     return (
