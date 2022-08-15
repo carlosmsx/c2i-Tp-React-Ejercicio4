@@ -15,9 +15,9 @@ const ListaTareas = (props) => {
             <tbody>
                 {
                     tareas.map((item,posicion)=><tr>
-                        <td>{tareas[posicion].nombre}</td>
-                        <td>{tareas[posicion].descripcion}</td>
-                        <td><Button variant="danger">Eliminar</Button></td>
+                        <td>{item.nombre}</td>
+                        <td>{item.descripcion}</td>
+                        <td><Button variant="danger" onClick={()=>props.borrarTarea(item)}>Eliminar</Button></td>
                     </tr>)
                 }
             </tbody>

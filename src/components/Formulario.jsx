@@ -10,11 +10,13 @@ const Formulario = () => {
 
     const submitTarea = (e)=>{
         e.preventDefault();
-        let copiaListaTareas = listaTareas;
-        copiaListaTareas.push(tarea);
-        setListaTareas(copiaListaTareas);
+        setListaTareas([...listaTareas, tarea]);
         setTarea(tareaVacia); //fuerzo el borrado del formulario
-        console.log(listaTareas)
+    }
+
+    const borrarTarea = (tareaPorBorrar)=>{
+        let nuevaLista = listaTareas.filter((item)=>{return item.nombre!==tareaPorBorrar.nombre;});   
+        setListaTareas(nuevaLista);     
     }
 
     return (
@@ -41,7 +43,7 @@ const Formulario = () => {
             </Form>
             <hr/>
             <h2>Lista de tareas</h2>
-            <ListaTareas listaTareas={listaTareas}/>
+            <ListaTareas listaTareas={listaTareas} borrarTarea={borrarTarea}/>
         </div>
     );
 };
