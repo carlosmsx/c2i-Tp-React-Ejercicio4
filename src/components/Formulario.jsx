@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ListaTareas from "./ListaTareas";
 import { Form, Button } from "react-bootstrap";
+import Swal from "sweetalert2";
 
 const Formulario = () => {
     const URL_API = process.env.REACT_APP_URL_API;
@@ -28,9 +29,47 @@ const Formulario = () => {
         }
     };
 
-    const submitTarea = (e) => {
+    const submitTarea = async(e) => {
         e.preventDefault();
-        setListaTareas([...listaTareas, tarea]);
+    
+        //TODO: validar
+        // if (cantidadCaracteres(nombreProducto, 2, 20) && validarPrecio(precio) && validarUrl(imagen) && validarCategoria(categoria)) {
+        //     setMensajeError(false);
+        // }
+        // else {
+        //     setMensajeError(true);
+        //     return;
+        // }
+
+        //crear objeto: notese que el objeto se crea con nombres de propiedades igual a las variables de donde se toman los datos
+        const nuevaTarea = {
+            nombre: tarea.nombre,
+            descripcion: tarea.descripcion
+        }
+        console.log(nuevaTarea)
+        //enviar peticion a la API (create)
+        try {
+            const respuesta = await fetch(URL_API, {
+                "method": "POST",
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": JSON.stringify(nuevaTarea)
+            });
+
+            if (respuesta.status === 201)
+            {
+                Swal.fire(
+                    'Tarea creada',
+                    'La tarea fue agregada correctamente',
+                    'success'
+                );
+            }
+        } 
+        catch(error) {
+            console.log(error);
+        }
+
         setTarea(tareaVacia); //fuerzo el borrado del formulario
     };
 
