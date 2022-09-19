@@ -56,9 +56,15 @@ const Formulario = () => {
                 },
                 body: JSON.stringify(nuevaTarea),
             });
-
+            console.log(respuesta)
             if (respuesta.status === 201) {
                 Swal.fire("Tarea creada", "La tarea fue agregada correctamente", "success");
+                setTarea(tareaVacia); //fuerzo el borrado del formulario
+                queryAPI();
+            }
+            else
+            {
+                throw new Error(respuesta.status);
             }
         } catch (error) {
             Swal.fire(
@@ -67,9 +73,6 @@ const Formulario = () => {
                 "error"
             );
         }
-
-        setTarea(tareaVacia); //fuerzo el borrado del formulario
-        queryAPI();
     };
 
     const borrarTarea = async (tareaPorBorrar) => {
