@@ -29,9 +29,9 @@ const Formulario = () => {
         }
     };
 
-    const submitTarea = async(e) => {
+    const submitTarea = async (e) => {
         e.preventDefault();
-    
+
         //TODO: validar
         // if (cantidadCaracteres(nombreProducto, 2, 20) && validarPrecio(precio) && validarUrl(imagen) && validarCategoria(categoria)) {
         //     setMensajeError(false);
@@ -44,40 +44,66 @@ const Formulario = () => {
         //crear objeto: notese que el objeto se crea con nombres de propiedades igual a las variables de donde se toman los datos
         const nuevaTarea = {
             nombre: tarea.nombre,
-            descripcion: tarea.descripcion
-        }
-        console.log(nuevaTarea)
+            descripcion: tarea.descripcion,
+        };
+        console.log(nuevaTarea);
         //enviar peticion a la API (create)
         try {
             const respuesta = await fetch(URL_API, {
-                "method": "POST",
-                "headers": {
-                    "Content-Type": "application/json"
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
                 },
-                "body": JSON.stringify(nuevaTarea)
+                body: JSON.stringify(nuevaTarea),
             });
 
-            if (respuesta.status === 201)
-            {
-                Swal.fire(
-                    'Tarea creada',
-                    'La tarea fue agregada correctamente',
-                    'success'
-                );
+            if (respuesta.status === 201) {
+                Swal.fire("Tarea creada", "La tarea fue agregada correctamente", "success");
             }
-        } 
-        catch(error) {
-            console.log(error);
+        } catch (error) {
+            Swal.fire(
+                "Error",
+                "Se produjo un error intentando crear la tarea. Por favor espere unos minutos e intente nuevamente",
+                "error"
+            );
         }
 
         setTarea(tareaVacia); //fuerzo el borrado del formulario
+        queryAPI();
     };
 
-    const borrarTarea = (tareaPorBorrar) => {
-        let nuevaLista = listaTareas.filter((item) => {
-            return item.nombre !== tareaPorBorrar.nombre;
+    const borrarTarea = async (tareaPorBorrar) => {
+        Swal.fire({
+            title: "Está seguro?",
+            text: "no podrá deshacer esta operación!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Borrar",
+            cancelButtonText: "Cancelar",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    //realizar peticion DELETE
+                    const respuesta = await fetch(URL_API + "/" + tareaPorBorrar._id, {
+                        method: "DELETE",
+                    });
+
+                    if (respuesta.status === 200) {
+                        Swal.fire("Tarea eliminada!", "La tarea fue correctamente eliminada.", "success");
+                    }
+                    //recargar tabla de productos
+                    queryAPI();
+                } catch (error) {
+                    Swal.fire(
+                        "Error",
+                        "Se produjo un error intentando eliminar la tarea. Por favor espere unos minutos e intente nuevamente",
+                        "error"
+                    );
+                }
+            }
         });
-        setListaTareas(nuevaLista);
     };
 
     return (
