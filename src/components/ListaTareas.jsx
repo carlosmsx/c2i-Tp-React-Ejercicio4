@@ -19,7 +19,7 @@ const ListaTareas = (props) => {
                         <td>{item.descripcion}</td>
                         <td>
                             <Button variant="danger" onClick={()=>props.borrarTarea(item)}>Eliminar</Button>
-                            <Button className="ms-1" variant="warning" onClick={()=>props.editarTarea(item)}>Editar</Button>
+                            <Button className="ms-2" variant="warning" onClick={()=>props.editarTarea(item)}>Editar</Button>
                         </td>
                     </tr>)
                 }

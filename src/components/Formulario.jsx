@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ListaTareas from "./ListaTareas";
-import { Form, Button } from "react-bootstrap";
+import { Alert, Form, Button } from "react-bootstrap";
 import Swal from "sweetalert2";
+import { cantidadCaracteres } from "./helpers";
 
 const Formulario = () => {
     const URL_API = process.env.REACT_APP_URL_API;
@@ -10,6 +11,8 @@ const Formulario = () => {
 
     const [tarea, setTarea] = useState(tareaVacia);
     const [listaTareas, setListaTareas] = useState([]);
+    const [modoEdicion, setModoEdicion] = useState(false);
+    const [mensajeError, setMensajeError] = useState(false);
 
     useEffect(() => {
         queryAPI();
@@ -29,24 +32,22 @@ const Formulario = () => {
         }
     };
 
-    const submitTarea = async (e) => {
+    const submitTarea = (e) => {
         e.preventDefault();
 
-        //TODO: validar
-        // if (cantidadCaracteres(nombreProducto, 2, 20) && validarPrecio(precio) && validarUrl(imagen) && validarCategoria(categoria)) {
-        //     setMensajeError(false);
-        // }
-        // else {
-        //     setMensajeError(true);
-        //     return;
-        // }
+        //validaciones
+        if (cantidadCaracteres(tarea.nombre, 2, 30) && cantidadCaracteres(tarea.descripcion, 5, 100)) {
+            setMensajeError(false);
+        } else {
+            setMensajeError(true);
+            return;
+        }
 
-        //crear objeto: notese que el objeto se crea con nombres de propiedades igual a las variables de donde se toman los datos
-        const nuevaTarea = {
-            nombre: tarea.nombre,
-            descripcion: tarea.descripcion,
-        };
-        console.log(nuevaTarea);
+        if (modoEdicion) modificarTarea();
+        else crearTarea();
+    };
+
+    const crearTarea = async () => {
         //enviar peticion a la API (create)
         try {
             const respuesta = await fetch(URL_API, {
@@ -54,16 +55,14 @@ const Formulario = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(nuevaTarea),
+                body: JSON.stringify(tarea),
             });
-            console.log(respuesta)
+
             if (respuesta.status === 201) {
                 Swal.fire("Tarea creada", "La tarea fue agregada correctamente", "success");
                 setTarea(tareaVacia); //fuerzo el borrado del formulario
                 queryAPI();
-            }
-            else
-            {
+            } else {
                 throw new Error(respuesta.status);
             }
         } catch (error) {
@@ -75,7 +74,37 @@ const Formulario = () => {
         }
     };
 
+    const modificarTarea = async () => {
+        //enviar peticion a la API (put)
+        try {
+            const respuesta = await fetch(URL_API + "/" + tarea._id, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(tarea),
+            });
+
+            if (respuesta.status === 200) {
+                Swal.fire("Tarea modificada", "La tarea fue modificada correctamente", "success");
+                setModoEdicion(false);
+                setTarea(tareaVacia); //fuerzo el borrado del formulario
+                queryAPI(); //recargo la lista
+            } else {
+                throw new Error(respuesta.status);
+            }
+        } catch (error) {
+            Swal.fire(
+                "Error",
+                "Se produjo un error intentando modificar la tarea. Por favor espere unos minutos e intente nuevamente",
+                "error"
+            );
+        }
+    };
+
     const borrarTarea = async (tareaPorBorrar) => {
+        setModoEdicion(false);
+        setTarea(tareaVacia);
         Swal.fire({
             title: "Está seguro?",
             text: "no podrá deshacer esta operación!",
@@ -109,35 +138,54 @@ const Formulario = () => {
         });
     };
 
+    const editarTarea = async (tareaEditada) => {
+        setModoEdicion(true);
+        setTarea(tareaEditada);
+    };
+
+    const cancelarEdicion = () => {
+        setModoEdicion(false);
+        setTarea(tareaVacia);
+    };
+
     return (
         <div>
             <h2>Nueva tarea</h2>
             <Form onSubmit={submitTarea}>
                 <Form.Group className="mb-3" controlId="formTareaNombre">
-                    <Form.Label>Tarea</Form.Label>
+                    <Form.Label>Tarea<small className="text-secondary"> (2 a 30 caracteres)</small></Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="Ingrese nombre para la tarea"
-                        onChange={(e) => setTarea({ nombre: e.target.value.trimStart(), descripcion: tarea.descripcion })}
+                        onChange={(e) =>
+                            setTarea({ _id: tarea._id, nombre: e.target.value.trimStart(), descripcion: tarea.descripcion })
+                        }
                         value={tarea.nombre}
                     />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formTareaDescripcion">
-                    <Form.Label>Descripción</Form.Label>
+                    <Form.Label>Descripción<small className="text-secondary"> (5 a 100 caracteres)</small></Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="Ingrese la descripción de la tarea"
-                        onChange={(e) => setTarea({ nombre: tarea.nombre, descripcion: e.target.value.trimStart() })}
+                        onChange={(e) =>
+                            setTarea({ _id: tarea._id, nombre: tarea.nombre, descripcion: e.target.value.trimStart() })
+                        }
                         value={tarea.descripcion}
                     />
                 </Form.Group>
                 <Button variant="primary" type="submit">
-                    Agregar
+                    {modoEdicion ? "Guardar" : "Agregar"}
                 </Button>
+                {modoEdicion ? (
+                    <Button className="ms-2" id="botonCancelar" variant="danger" onClick={cancelarEdicion}>
+                        Cancelar
+                    </Button>
+                ) : null}
             </Form>
-            <hr />
+            {mensajeError === true ? <Alert className="my-3" variant="danger">Debe corregir los datos</Alert> : null} <hr />
             <h2>Lista de tareas</h2>
-            <ListaTareas listaTareas={listaTareas} borrarTarea={borrarTarea} />
+            <ListaTareas listaTareas={listaTareas} borrarTarea={borrarTarea} editarTarea={editarTarea} />
         </div>
     );
 };
