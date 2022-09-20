@@ -3,4 +3,9 @@
 
 Ejercicio 4 del trabajo práctico de React para la comision c2i.
 
+## SweetAlert
+npm install --save sweetalert2 sweetalert2-react-content
+
+## Este proyecto fue modificado para trabajar con un backend
+
 ### Carlos Escobar

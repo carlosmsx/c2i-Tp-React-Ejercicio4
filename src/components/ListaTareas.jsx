@@ -14,10 +14,13 @@ const ListaTareas = (props) => {
             </thead>
             <tbody>
                 {
-                    tareas.map((item,posicion)=><tr>
+                    tareas.map((item,posicion)=><tr key={item._id}>
                         <td>{item.nombre}</td>
                         <td>{item.descripcion}</td>
-                        <td><Button variant="danger" onClick={()=>props.borrarTarea(item)}>Eliminar</Button></td>
+                        <td>
+                            <Button variant="danger" onClick={()=>props.borrarTarea(item)}>Eliminar</Button>
+                            <Button className="ms-2" variant="warning" onClick={()=>props.editarTarea(item)}>Editar</Button>
+                        </td>
                     </tr>)
                 }
             </tbody>
